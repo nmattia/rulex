@@ -1,0 +1,31 @@
+grammar Latex
+    rule document
+        (environment/command/text)* <Rulex::Tex::Grammar::Document>
+    end
+
+    rule environment
+        "\\begin{" word "}" text "\\end{" word &{ |seq| seq[1].text_value == seq[5].text_value } "}" <Rulex::Tex::Grammar::Environment>
+
+    end
+
+    rule command
+       "\\" command_name ('{' text '}')* <Rulex::Tex::Grammar::Command>
+    end
+
+    rule command_name
+        [^{]+
+    end
+
+    rule text
+        (spaces? word spaces?)+ <Rulex::Tex::Grammar::Text>
+    end
+
+    rule word
+        #([^\\]+ / ("\\" word? ))
+        ([^\s\\] / '\\\\')+
+    end
+
+    rule spaces
+        [\s]+
+    end
+end
