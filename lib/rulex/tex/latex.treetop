@@ -4,16 +4,28 @@ grammar Latex
     end
 
     rule environment
-        "\\begin{" word "}" text "\\end{" word &{ |seq| seq[1].text_value == seq[5].text_value } "}" <Rulex::Tex::Grammar::Environment>
+        "\\begin{" environment_name "}" environment_text  "\\end{" environment_name &{ |seq| seq[1].text_value == seq[5].text_value } "}" <Rulex::Tex::Grammar::Environment>
+    end
 
+    rule environment_text
+        [^\\]*
+    end
+
+
+    rule environment_name
+        [^}\s]+
     end
 
     rule command
-       "\\" command_name ('{' text '}')* <Rulex::Tex::Grammar::Command>
+       "\\" command_name ('{' command_argument '}')* <Rulex::Tex::Grammar::Command>
     end
 
     rule command_name
-        [^{]+
+        [^{\s]+
+    end
+
+    rule command_argument
+        [^}]+
     end
 
     rule text
@@ -21,8 +33,7 @@ grammar Latex
     end
 
     rule word
-        #([^\\]+ / ("\\" word? ))
-        ([^\s\\] / '\\\\')+
+        ([\S])+
     end
 
     rule spaces

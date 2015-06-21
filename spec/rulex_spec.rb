@@ -15,7 +15,7 @@ describe Rulex::Tex::Reader do
   it 'parses an empty document' do
     reader = Rulex::Tex::Reader.new
     reader.parse ""
-    expect(reader.export).to eq({type: :document})
+    expect(reader.export).to include({type: :document})
   end
 
   it 'accepts text' do
@@ -44,15 +44,6 @@ describe Rulex::Tex::Reader do
   end
 
 
-  it 'parses a text with escaped backslashes' do
-    text = "some words with an escaped \\ backslash"
-    reader = Rulex::Tex::Reader.new
-    reader.parse text
-    text_node = reader.export[:children].first
-    expect(text_node).to include(type: :text)
-    expect(text_node).to include(text: text)
-  end
-
   it 'accepts commands' do
     reader = Rulex::Tex::Reader.new
     reader.parse "\\somecommand{arg}"
@@ -63,19 +54,35 @@ describe Rulex::Tex::Reader do
 
   it 'parses commands' do
     reader = Rulex::Tex::Reader.new
-    reader.parse "\\somecommand{arg}"
+    cmd = "\\somecommand{arg}"
+    reader.parse cmd
     command_node = reader.export[:children].first
     expect(command_node).to include(type: :command)
+    expect(command_node).to include(log: "\\somecommand{arg}")
     expect(command_node).to include(name: "somecommand")
   end
 
-  it 'accepts environments' do
+  it 'parses a command\'s arguments' do
+    reader = Rulex::Tex::Reader.new
+    reader.parse "\\somecommand{first arg}{other}"
+    command_node = reader.export[:children].first
+    expect(command_node).to include(arguments: ["first arg", "other"])
+  end
 
+  it 'accepts environments' do
     reader = Rulex::Tex::Reader.new
     reader.parse "\\begin{env} some text \\end{env}"
-    #require "yaml"
-    #puts reader.export.to_yaml
     env_node = reader.export[:children].first
     expect(env_node).to include(type: :environment)
+  end
+
+  it 'parses environments' do
+    reader = Rulex::Tex::Reader.new
+    reader.parse "\\begin{env} some text \\end{env}"
+    env_node = reader.export[:children].first
+    expect(env_node).to include(type: :environment)
+    expect(env_node).to include(name: "env")
+    expect(env_node).to include(content: " some text ")
+
   end
 end

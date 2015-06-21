@@ -6,6 +6,7 @@ module Rulex
         def node_content
           h = {type: :node} #, log: elements.to_s}
           h.merge!(:children => elements.map{|e| e.node_content}) if elements && !elements.empty?
+          h.merge!(log: text_value)
           h.merge! content
         end
         def content
@@ -30,13 +31,17 @@ module Rulex
 
       class Command < CustomNode
         def content
-          {type: :command, name: elements[1].text_value}
+          h = {type: :command, name: elements[1].text_value}
+          if kleene_s = elements[2]
+              h.merge(arguments: kleene_s.elements.map{|e| e.elements[1].text_value}) 
+          end
+
         end
       end 
 
       class Environment < CustomNode
         def content
-          {type: :environment, name: elements[1].text_value}
+          {type: :environment, name: elements[1].text_value, content: elements[3].text_value}
         end
       end
     end
