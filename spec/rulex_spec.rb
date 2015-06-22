@@ -29,6 +29,8 @@ describe Rulex do
       tex_writer = Rulex::Tex::Writer.new
       rex_reader.import dot_rex
       tex_writer.import rex_reader.export
+      require "yaml"
+      puts rex_reader.export.to_yaml
 
       expect(tex_writer.export.strip).to eq(File.open(dot_tex).read.strip)
     end
@@ -107,10 +109,26 @@ describe Rulex::Tex::Reader do
     env_node = reader.export[:children].first
     expect(env_node).to include(type: :environment)
     expect(env_node).to include(name: "env")
-    expect(env_node).to include(content: " some text ")
+    content = env_node[:children]
+    expect(content).to include({type: :text, text: " some text "})
   end
 end
 
+describe Rulex::Tex::Writer do
+  it 'writes an empty document' do
+    writer = Rulex::Tex::Writer.new
+    writer.import []
+    expect(writer.export).to eq("")
+
+  end
+
+  it 'writes text' do
+    writer = Rulex::Tex::Writer.new
+    writer.import [{type: :text, text: "Hello, world!"}]
+    expect(writer.export).to eq("Hello, world!")
+  end
+
+end
 
 describe Rulex::Rex::Reader do
   it 'reads raw text' do

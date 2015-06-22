@@ -32,9 +32,18 @@ module Rulex
         new_node = {type: :command, name: name, arguments: args}
         @content << new_node
       end
+      
+      def tex_environment(name, args, block)
+        new_node = {type: :environment, name: name, arguments: args}
+        @content << new_node
+      end
 
       def method_missing(m_id, *args, &block) 
-        tex_command(m_id, args)
+        if block
+          tex_environment(m_id, args, block)
+        else
+          tex_command(m_id, args)
+        end
       end
     end
   end

@@ -41,7 +41,7 @@ module Rulex
 
       class Environment < CustomNode
         def content
-          {type: :environment, name: elements[1].text_value, content: elements[3].text_value}
+          {type: :environment, name: elements[1].text_value, children: elements[3].elements.map{|e| e.content }}
         end
       end
     end

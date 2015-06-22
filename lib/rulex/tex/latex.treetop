@@ -4,11 +4,16 @@ grammar Latex
     end
 
     rule environment
-        "\\begin{" environment_name "}" environment_text  "\\end{" environment_name &{ |seq| seq[1].text_value == seq[5].text_value } "}" <Rulex::Tex::Grammar::Environment>
+        "\\begin{" environment_name "}" environment_text  "\\end{" environment_name &{ |seq|  seq[1].text_value == seq[5].text_value } "}" <Rulex::Tex::Grammar::Environment>
     end
 
     rule environment_text
-        [^\\]*
+        #document &{ |s| puts s[0].text_value; true}
+        #( document) !"\\end{" &{ |s| puts s[0].text_value; true}
+        document
+
+        #[^\\]* &{ |s| puts s[0].text_value; true}
+        #[^\\]*
     end
 
 
@@ -21,7 +26,7 @@ grammar Latex
     end
 
     rule command_name
-        [^{\s]+
+        !"begin" (!"end" ([^{\s]+))
     end
 
     rule command_argument
@@ -33,10 +38,10 @@ grammar Latex
     end
 
     rule word
-        ([\S])+
+        ([^\s\\])+
     end
 
     rule spaces
-        [\s]+
+        [\s\n]+
     end
 end
