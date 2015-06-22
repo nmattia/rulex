@@ -1,1 +1,6 @@
-raw w{Hello, world!}
+documentclass :article
+document do
+raw %q[
+Hello, World!
+]
+end

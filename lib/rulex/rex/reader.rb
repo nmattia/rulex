@@ -20,8 +20,21 @@ module Rulex
         @content << new_node
       end
 
+      def import filepath
+        read File.open(filepath).read
+      end
+
       def export
         @content
+      end
+
+      def tex_command(name, args)
+        new_node = {type: :command, name: name, arguments: args}
+        @content << new_node
+      end
+
+      def method_missing(m_id, *args, &block) 
+        tex_command(m_id, args)
       end
     end
   end

@@ -9,6 +9,31 @@ describe Rulex do
     reader = Rulex::Tex::Reader.new
     expect(reader).not_to be nil
   end
+
+  it 'translates a documentclass command' do
+    rex_reader = Rulex::Rex::Reader.new
+    tex_writer = Rulex::Tex::Writer.new
+    rex_reader.read %q[documentclass :article]
+    tex_writer.import rex_reader.export
+    latex_content = tex_writer.export
+    expect(latex_content.strip).to eq(%q[\documentclass{article}])
+  end
+
+  it 'processes the examples correctly' do
+    rex_files = Dir.glob('examples/*.rex')
+    rex_files.each do |dot_rex|
+
+      dot_tex = dot_rex.sub /\.[^.]+\z/, ".tex"
+
+      rex_reader = Rulex::Rex::Reader.new
+      tex_writer = Rulex::Tex::Writer.new
+      rex_reader.import dot_rex
+      tex_writer.import rex_reader.export
+
+      expect(tex_writer.export.strip).to eq(File.open(dot_tex).read.strip)
+    end
+
+  end
 end
 
 describe Rulex::Tex::Reader do
@@ -88,8 +113,6 @@ end
 
 
 describe Rulex::Rex::Reader do
-
-
   it 'reads raw text' do
     reader = Rulex::Rex::Reader.new
     reader.read "raw '\\mycommand{}'"
@@ -100,14 +123,34 @@ describe Rulex::Rex::Reader do
 
   it 'reads LaTeX more than once' do
     reader = Rulex::Rex::Reader.new
-    reader.read "tex '\\mycommand{a}'\ntex '\\frac{1}{2}'"
+    reader.read  %q[tex '\mycommand{a}'
+                    tex '\frac{1}{2}']
 
-    first_node = reader.export.first[:children][:children].first
-    second_node = reader.export[1][:children][:children].first
-    expect(first_node).to include(name: "mycommand")
-    expect(second_node).to include(name: "frac")
-    expect(second_node).to include(arguments: ["1","2"])
+                    first_node = reader.export.first[:children][:children].first
+                    second_node = reader.export[1][:children][:children].first
+                    expect(first_node).to include(name: "mycommand")
+                    expect(second_node).to include(name: "frac")
+                    expect(second_node).to include(arguments: ["1","2"])
   end
 
+  it 'translates missing_method calls to latex commands' do
+    reader = Rulex::Rex::Reader.new
 
+    reader.read %q[rndcmd "my arg"]
+    node = reader.export.first
+    expect(node).to include(type: :command)
+    expect(node).to include(name: :rndcmd)
+    expect(node).to include(arguments: ["my arg"])
+  end
+
+  it 'imports a file' do
+    reader = Rulex::Rex::Reader.new
+    reader.import 'examples/hello_world.rex'
+    node = reader.export.first
+    expect(node).to include(type: :command)
+    expect(node).to include(name: :documentclass)
+    expect(node).to include(arguments: [:article])
+  end
 end
+
+
