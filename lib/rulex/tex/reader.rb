@@ -12,7 +12,6 @@ module Rulex
 
       def initialize
         @parser = LatexParser.new
-        @documentclass = :article
         @content = []
       end
 
@@ -22,7 +21,7 @@ module Rulex
       end
       alias_method :export, :to_a
 
-      def parse str
+      def read str
         @content = @parser.parse(str).node_content
       end
     end

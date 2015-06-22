@@ -12,32 +12,32 @@ describe Rulex do
 end
 
 describe Rulex::Tex::Reader do
-  it 'parses an empty document' do
+  it 'reads an empty document' do
     reader = Rulex::Tex::Reader.new
-    reader.parse ""
+    reader.read ""
     expect(reader.export).to include({type: :document})
   end
 
   it 'accepts text' do
     reader = Rulex::Tex::Reader.new
-    reader.parse "abc"
+    reader.read "abc"
     h = reader.export
     expect(h).to include(type: :document)
   end
 
-  it 'parses a word' do
+  it 'reads a word' do
     word = "abc"
     reader = Rulex::Tex::Reader.new
-    reader.parse word
+    reader.read word
     text_node = reader.export[:children].first
     expect(text_node).to include(type: :text)
     expect(text_node).to include(text: word)
   end
 
-  it 'parses a text' do
+  it 'reads a text' do
     text = "some sentence with spaces and we1rd c#arac!er3s"
     reader = Rulex::Tex::Reader.new
-    reader.parse text
+    reader.read text
     text_node = reader.export[:children].first
     expect(text_node).to include(type: :text)
     expect(text_node).to include(text: text)
@@ -46,43 +46,54 @@ describe Rulex::Tex::Reader do
 
   it 'accepts commands' do
     reader = Rulex::Tex::Reader.new
-    reader.parse "\\somecommand{arg}"
+    reader.read "\\somecommand{arg}"
     h = reader.export
     expect(h).to include(type: :document)
   end
 
 
-  it 'parses commands' do
+  it 'reads commands' do
     reader = Rulex::Tex::Reader.new
     cmd = "\\somecommand{arg}"
-    reader.parse cmd
+    reader.read cmd
     command_node = reader.export[:children].first
     expect(command_node).to include(type: :command)
     expect(command_node).to include(log: "\\somecommand{arg}")
     expect(command_node).to include(name: "somecommand")
   end
 
-  it 'parses a command\'s arguments' do
+  it 'reads a command\'s arguments' do
     reader = Rulex::Tex::Reader.new
-    reader.parse "\\somecommand{first arg}{other}"
+    reader.read "\\somecommand{first arg}{other}"
     command_node = reader.export[:children].first
     expect(command_node).to include(arguments: ["first arg", "other"])
   end
 
   it 'accepts environments' do
     reader = Rulex::Tex::Reader.new
-    reader.parse "\\begin{env} some text \\end{env}"
+    reader.read "\\begin{env} some text \\end{env}"
     env_node = reader.export[:children].first
     expect(env_node).to include(type: :environment)
   end
 
-  it 'parses environments' do
+  it 'reads environments' do
     reader = Rulex::Tex::Reader.new
-    reader.parse "\\begin{env} some text \\end{env}"
+    reader.read "\\begin{env} some text \\end{env}"
     env_node = reader.export[:children].first
     expect(env_node).to include(type: :environment)
     expect(env_node).to include(name: "env")
     expect(env_node).to include(content: " some text ")
-
   end
+end
+
+
+describe Rulex::Rex::Reader do
+  it 'reads raw LaTeX' do
+    reader = Rulex::Rex::Reader.new
+    reader.read "raw 'Hi'"
+    text_node = reader.export[:children].first
+    expect(text_node).to include(type: :text)
+    expect(text_node).to include(text: "Hi")
+  end
+
 end
