@@ -88,12 +88,26 @@ end
 
 
 describe Rulex::Rex::Reader do
-  it 'reads raw LaTeX' do
+
+
+  it 'reads raw text' do
     reader = Rulex::Rex::Reader.new
-    reader.read "raw 'Hi'"
-    text_node = reader.export[:children].first
-    expect(text_node).to include(type: :text)
-    expect(text_node).to include(text: "Hi")
+    reader.read "raw '\\mycommand{}'"
+    text_node = reader.export.first
+    expect(text_node).to include(type: :raw)
+    expect(text_node).to include(text: "\\mycommand{}")
   end
+
+  it 'reads LaTeX more than once' do
+    reader = Rulex::Rex::Reader.new
+    reader.read "tex '\\mycommand{a}'\ntex '\\frac{1}{2}'"
+
+    first_node = reader.export.first[:children][:children].first
+    second_node = reader.export[1][:children][:children].first
+    expect(first_node).to include(name: "mycommand")
+    expect(second_node).to include(name: "frac")
+    expect(second_node).to include(arguments: ["1","2"])
+  end
+
 
 end

@@ -1,9 +1,1 @@
-raw w{
-
-
-Hello, world!
-
-
-
-
-}
+raw w{Hello, world!}
