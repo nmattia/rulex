@@ -139,17 +139,19 @@ describe Rulex::Rex::Reader do
     expect(text_node).to include(text: "\\mycommand{}")
   end
 
+
+
   it 'reads LaTeX more than once' do
     reader = Rulex::Rex::Reader.new
-    reader.read  %q[tex '\mycommand{a}'
-                    tex '\frac{1}{2}']
+    reader.read  "tex '\\mycommand{a}'\ntex '\\frac{1}{2}'"
 
-                    first_node = reader.export.first[:children][:children].first
-                    second_node = reader.export[1][:children][:children].first
-                    expect(first_node).to include(name: "mycommand")
-                    expect(second_node).to include(name: "frac")
-                    expect(second_node).to include(arguments: ["1","2"])
+    first_node = reader.export.first[:children][:children].first
+    second_node = reader.export[1][:children][:children].first
+    expect(first_node).to include(name: "mycommand")
+    expect(second_node).to include(name: "frac")
+    expect(second_node).to include(arguments: ["1","2"])
   end
+
 
   it 'translates missing_method calls to latex commands' do
     reader = Rulex::Rex::Reader.new
@@ -161,6 +163,15 @@ describe Rulex::Rex::Reader do
     expect(node).to include(arguments: ["my arg"])
   end
 
+  it 'translates missing_method calls with blocks to environments' do
+    reader = Rulex::Rex::Reader.new
+    reader.read  "someEnv do\nsomeCom :some_arg\nend"
+    env_node = reader.export.first
+    expect(env_node).to include(type: :environment, name: :someEnv)
+    env_children = env_node[:children]
+    expect(env_children).to include(arguments: [:some_arg], type: :command, name: :someCom)
+  end
+
   it 'imports a file' do
     reader = Rulex::Rex::Reader.new
     reader.import 'examples/hello_world.rex'
@@ -170,5 +181,4 @@ describe Rulex::Rex::Reader do
     expect(node).to include(arguments: [:article])
   end
 end
-
 

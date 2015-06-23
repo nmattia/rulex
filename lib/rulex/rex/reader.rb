@@ -6,9 +6,10 @@ module Rulex
         @latex_reader = Rulex::Tex::Reader.new
       end
 
-      def read str
-        eval str
-      end
+      alias_method :read, :instance_eval
+      #def read str
+        #instance_eval str
+      #end
 
       def raw str
         new_node = {type: :raw, text: str }
@@ -35,6 +36,10 @@ module Rulex
       
       def tex_environment(name, args, block)
         new_node = {type: :environment, name: name, arguments: args}
+        deeper_parser = Rulex::Rex::Reader.new 
+        deeper_parser.read &block
+        new_node.merge!(children: deeper_parser.export)
+        
         @content << new_node
       end
 
