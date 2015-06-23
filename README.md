@@ -1,6 +1,31 @@
 # Rulex
 
-Rulex is a rubygem allowing you to use Ruby while writing LaTex files. It reads rulex `.rex` files, and converts them into LaTex `.tex` files. Here's an example:
+Rulex is a rubygem allowing you to use Ruby while writing LaTex files. It reads rulex `.rex` files, and converts them into LaTex `.tex` files. A `.rex` file is a Ruby file; you can use (almost) everything the way you would in a Ruby script. 
+
+## Installation
+
+Add this line to your application's Gemfile:
+
+```ruby
+gem 'rulex'
+```
+
+And then execute:
+
+    $ bundle
+
+Or install it yourself as:
+
+    $ gem install rulex
+
+## Usage
+
+**Everything is still very experimental, and might break at any point!**
+
+*For detailed documentation, please refer to the code, mainly `/spec/rulex_spec.rb`. There are a few examples as well in `/examples/`.*
+
+
+### Example 
 
 ```ruby
 # example.rex
@@ -79,26 +104,6 @@ Finally I would like to thank
 \end{enumerate}
 \end{document}
 ```
-
-## Installation
-
-Add this line to your application's Gemfile:
-
-```ruby
-gem 'rulex'
-```
-
-And then execute:
-
-    $ bundle
-
-Or install it yourself as:
-
-    $ gem install rulex
-
-## Usage
-
-TODO: Write usage instructions here
 
 ## Development
 
