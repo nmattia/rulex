@@ -22,11 +22,17 @@ grammar Latex
     end
 
     rule command
-       "\\" command_name ('{' command_argument '}')* <Rulex::Tex::Grammar::Command>
+       "\\" command_name ('[' command_option (',' command_option)* ']')? ('{' command_argument '}')* <Rulex::Tex::Grammar::Command>
+    end
+
+    rule command_option
+        (![\s,] [a-z0-9])+ # With the neg. lookahead we make sure we don't consume the next command
     end
 
     rule command_name
-        !"begin" (!"end" ([^{\s]+))
+        !"begin" # First, we make sure it is not the beginning of an environment
+        (!"end"  # Then, we make sure it won't consume the end of an environment
+        ([^\[{\s]+)) # Finally, we don't want to consume the options or args of the command
     end
 
     rule command_argument

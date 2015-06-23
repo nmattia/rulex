@@ -93,6 +93,19 @@ describe Rulex::Tex::Reader do
     expect(command_node).to include(arguments: ["first arg", "other"])
   end
 
+  it 'reads a command\'s only optional argument' do
+    reader = Rulex::Tex::Reader.new
+    reader.read "\\somecommand[option]{first arg}{other}"
+    command_node = reader.export[:children].first
+    expect(command_node).to include(options: ["option"], arguments: ["first arg", "other"])
+  end
+
+  it 'reads a command\'s optional arguments' do
+    reader = Rulex::Tex::Reader.new
+    reader.read "\\somecommand[option1,option2]{first arg}{other}"
+    command_node = reader.export[:children].first
+    expect(command_node).to include(options: ["option1", "option2" ], arguments: ["first arg", "other"])
+  end
   it 'accepts environments' do
     reader = Rulex::Tex::Reader.new
     reader.read "\\begin{env} some text \\end{env}"
@@ -137,6 +150,12 @@ describe Rulex::Rex::Reader do
   end
 
 
+  it 'allows method definitions' do
+    reader = Rulex::Rex::Reader.new
+    reader.read "def my_func\n  'result'\nend"
+    expect(reader.my_func).to eq('result')
+    expect(reader.instance_eval 'my_func').to eq('result')
+  end
 
   it 'reads LaTeX more than once' do
     reader = Rulex::Rex::Reader.new

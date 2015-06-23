@@ -32,10 +32,21 @@ module Rulex
       class Command < CustomNode
         def content
           h = {type: :command, name: elements[1].text_value}
-          if kleene_s = elements[2]
-              h.merge(arguments: kleene_s.elements.map{|e| e.elements[1].text_value}) 
+          if opts_maybe = elements[2].elements
+            opts = []
+            opts << opts_maybe[1].text_value
+
+            if opts_kleene_s = opts_maybe[2].elements
+              opts += opts_kleene_s.map{|e| e.elements[1].text_value}
+            end
+
+            h.merge!(options: opts)
+          end
+          if args_kleene_s = elements[3]
+            h.merge!(arguments: args_kleene_s.elements.map{|e| e.elements[1].text_value}) 
           end
 
+          h
         end
       end 
 

@@ -1,12 +1,84 @@
 # Rulex
 
-Rulex is a rubygem allowing you to use Ruby while writing LaTex files.
+Rulex is a rubygem allowing you to use Ruby while writing LaTex files. It reads rulex `.rex` files, and converts them into LaTex `.tex` files. Here's an example:
 
+```ruby
+# example.rex
+documentclass :article
 
+def count_from range
+  first = range.first
+  last = range.last
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/rulex`. To experiment with that code, run `bin/console` for an interactive prompt.
+  subsection "how to count from #{first} to #{last}"
+  raw "Let's try to count."
 
-TODO: Delete this and the text above, and describe your gem
+  itemize do
+    range.each do |n|
+      item n.to_s
+    end
+  end
+end
+document do
+  section "A Short Lecture on How to Count"
+
+  count_from (1..5)
+  count_from (10..20)
+
+  raw "Good job, now off to section "; ref :acks;
+
+  section "Acknowledgements"
+  label :acks
+
+  raw "Finally I would like to thank \n"
+
+  enumerate do
+    %w[Donald\ Knuth Yukihiro\ Matsumoto].each do |name|
+      item "Mr. #{name}"
+    end
+  end
+end
+```
+
+Run `rulex example.rex > example.tex` to get
+
+```latex
+% example.tex
+\documentclass{article}
+\begin{document}
+\section{A Short Lecture on How to Count}
+\subsection{how to count from 1 to 5}
+Let's try to count.\begin{itemize}
+\item{1}
+\item{2}
+\item{3}
+\item{4}
+\item{5}
+\end{itemize}
+\subsection{how to count from 10 to 20}
+Let's try to count.\begin{itemize}
+\item{10}
+\item{11}
+\item{12}
+\item{13}
+\item{14}
+\item{15}
+\item{16}
+\item{17}
+\item{18}
+\item{19}
+\item{20}
+\end{itemize}
+Good job, now off to section \ref{acks}
+\section{Acknowledgements}
+\label{acks}
+Finally I would like to thank 
+\begin{enumerate}
+\item{Mr. Donald Knuth}
+\item{Mr. Yukihiro Matsumoto}
+\end{enumerate}
+\end{document}
+```
 
 ## Installation
 
@@ -47,3 +119,6 @@ To install this gem onto your local machine, run `bundle exec rake install`. To 
 
 * `Rulex::Tex::Grammar::Document` is a big misnommer! It should be changed to something that reflects better what its role is.
 * `Rulex::Rex::Reader#raw` might not be the best name either. Maybe change it to text.
+* Add markdown support to `Rulex::Rex::Reader` through Pandoc
+* The parser needs some beefin-up (not sure what it does with spaces, especially with command options)
+* Maybe add some syntax for LaTeX commands to output text directly rather than store the command in the tree
