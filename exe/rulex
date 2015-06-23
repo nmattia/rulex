@@ -3,6 +3,9 @@
 require "rulex"
 
 
-reader = Rulex::Rex::Reader.new
-reader.read File.open(ARGV[0]).read
-puts reader.export
+rex_reader = Rulex::Rex::Reader.new
+tex_writer = Rulex::Tex::Writer.new
+
+rex_reader.read File.open(ARGV[0]).read
+tex_writer.import rex_reader.export
+puts tex_writer.export

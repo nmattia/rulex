@@ -1,5 +1,9 @@
 # Rulex
 
+Rulex is a rubygem allowing you to use Ruby while writing LaTex files.
+
+
+
 Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/rulex`. To experiment with that code, run `bin/console` for an interactive prompt.
 
 TODO: Delete this and the text above, and describe your gem
@@ -43,4 +47,3 @@ To install this gem onto your local machine, run `bundle exec rake install`. To 
 
 * `Rulex::Tex::Grammar::Document` is a big misnommer! It should be changed to something that reflects better what its role is.
 * `Rulex::Rex::Reader#raw` might not be the best name either. Maybe change it to text.
-
