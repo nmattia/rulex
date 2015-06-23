@@ -41,4 +41,6 @@ To install this gem onto your local machine, run `bundle exec rake install`. To 
 
 ### What can I do?
 
-`Rulex::Tex::Grammar::Document` is a big misnommer! It should be changed to something that reflects better what its role is.
+* `Rulex::Tex::Grammar::Document` is a big misnommer! It should be changed to something that reflects better what its role is.
+* `Rulex::Rex::Reader#raw` might not be the best name either. Maybe change it to text.
+

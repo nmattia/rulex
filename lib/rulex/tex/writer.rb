@@ -23,6 +23,8 @@ module Rulex
             @content += "\\begin{#{item[:name]}}\n"
             import item[:children]
             @content += "\\end{#{item[:name]}}\n"
+          else
+            import item[:children] if item[:children]
           end
         end
       end

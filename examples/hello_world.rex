@@ -1,6 +1,4 @@
 documentclass :article
 document do
-raw %q[
-Hello, World!
-]
+raw "Hello, World!\n"
 end

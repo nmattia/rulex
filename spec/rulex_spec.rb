@@ -29,9 +29,6 @@ describe Rulex do
       tex_writer = Rulex::Tex::Writer.new
       rex_reader.import dot_rex
       tex_writer.import rex_reader.export
-      require "yaml"
-      puts rex_reader.export.to_yaml
-
       expect(tex_writer.export.strip).to eq(File.open(dot_tex).read.strip)
     end
 
@@ -135,7 +132,7 @@ describe Rulex::Rex::Reader do
     reader = Rulex::Rex::Reader.new
     reader.read "raw '\\mycommand{}'"
     text_node = reader.export.first
-    expect(text_node).to include(type: :raw)
+    expect(text_node).to include(type: :text)
     expect(text_node).to include(text: "\\mycommand{}")
   end
 
