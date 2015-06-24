@@ -1,6 +1,7 @@
 module Rulex
   module Rex
     class Reader
+
       def initialize
         @content = []
         @content_stack = [@content]
@@ -15,8 +16,6 @@ module Rulex
 
       def raw str
         add_to_content(type: :text, text: str)
-        #new_node = {type: :text, text: str }
-        #@content << new_node
       end
 
       def tex str
@@ -31,8 +30,18 @@ module Rulex
         @content
       end
 
-      def tex_command(name, args)
-        add_to_content(type: :command, name: name, arguments: args)
+      def tex_command(name, params)
+        if params.length == 1
+          add_to_content(type: :command, name: name, arguments: params)
+        elsif params.length == 2
+          opts = params[0]
+          args = params[1]
+          add_to_content(type: :command, name: name, arguments: args, options: opts)
+        end
+      end
+
+      def depth
+        @content_stack.length - 1
       end
 
       def tex_environment(name, args, block)
@@ -40,12 +49,6 @@ module Rulex
         @content_stack.push []
         read &block
         new_node.merge!(children: @content_stack.pop)
-
-        #new_node = {type: :environment, name: name, arguments: args}
-        #deeper_parser = Rulex::Rex::Reader.new 
-        #deeper_parser.read &block
-        #new_node.merge!(children: deeper_parser.export)
-
         add_to_content new_node
       end
 

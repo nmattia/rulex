@@ -138,6 +138,18 @@ describe Rulex::Tex::Writer do
     expect(writer.export).to eq("Hello, world!")
   end
 
+
+  it 'writes commands' do
+    writer = Rulex::Tex::Writer.new
+    writer.import [{type: :command, name: :documentclass, arguments: [:article]}]
+    expect(writer.export.strip).to eq("\\documentclass{article}")
+  end
+
+  it 'writes commands with arguments and optional arguments' do
+    writer = Rulex::Tex::Writer.new
+    writer.import [{type: :command, name: :documentclass, options: ["11pt",:a4paper] , arguments: [:article]}]
+    expect(writer.export.strip).to eq("\\documentclass[11pt,a4paper]{article}")
+  end
 end
 
 describe Rulex::Rex::Reader do
@@ -177,6 +189,17 @@ describe Rulex::Rex::Reader do
     expect(node).to include(type: :command)
     expect(node).to include(name: :rndcmd)
     expect(node).to include(arguments: ["my arg"])
+  end
+
+  it 'write latex commands with args and opts' do
+    reader = Rulex::Rex::Reader.new
+
+    reader.read %q[mycmd(["option1","option2"], ["arg1","arg2"])]
+    node = reader.export.first
+    expect(node).to include(type: :command)
+    expect(node).to include(name: :mycmd)
+    expect(node).to include(arguments: ["arg1","arg2"])
+    expect(node).to include(options: ["option1", "option2"])
   end
 
   it 'translates missing_method calls with blocks to environments' do

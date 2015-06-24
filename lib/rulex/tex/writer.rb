@@ -13,6 +13,9 @@ module Rulex
           case item[:type]
           when :command
             @content += "\\#{item[:name]}"
+            if opts = item[:options]
+              @content += '[' + opts.join(',') + ']'
+            end
             item[:arguments].each do |arg|
               @content += "{#{arg}}"
             end
