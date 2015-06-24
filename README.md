@@ -149,3 +149,5 @@ To install this gem onto your local machine, run `bundle exec rake install`. To 
 * The parser needs some beefin-up (not sure what it does with spaces, especially with command options)
 * Maybe add some syntax for LaTeX commands to output text directly rather than store the command in the tree
 * Coffee is on me if you write a Vim plugin
+* Another coffee if you also write a Rake task.
+* There should be some special delimiters like Ruby's `#{...}` (maybe `#< ... >`) which would translate all method calls to `pure_` method calls. That would make inlining method calls in strings much easier.
