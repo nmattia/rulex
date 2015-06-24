@@ -222,7 +222,7 @@ describe Rulex::Rex::Reader do
 
   it 'translates missing methods starting with `pure_` to equivalent pure functions' do
     reader = Rulex::Rex::Reader.new
-    expect(reader.pure_frac("1","2")).to eq("\\frac{1}{2}")
+    expect(reader.pure_tilde("x").strip).to eq("\\tilde{x}")
   end
 end
 

@@ -30,14 +30,21 @@ module Rulex
         @content
       end
 
-      def tex_command(name, params)
-        if params.length == 1
-          add_to_content(type: :command, name: name, arguments: params)
-        elsif params.length == 2
+      def build_tex_command(name, params)
+        case params.length
+        when 1
+          {type: :command, name: name, arguments: params} if params.length == 1
+        when 2
           opts = params[0]
           args = params[1]
-          add_to_content(type: :command, name: name, arguments: args, options: opts)
+          {type: :command, name: name, arguments: args, options: opts}
+        else
+          error "wrong number of params"
         end
+      end
+
+      def tex_command(name, params)
+        add_to_content build_tex_command name, params
       end
 
       def depth
@@ -56,7 +63,8 @@ module Rulex
         if block
           tex_environment(m_id, args, block)
         elsif /pure_([a-zA-Z]+)/.match(m_id)
-          "\\#{$1}{1}{2}"
+          Rulex::Tex::Writer.to_str(build_tex_command($1,args))
+          #"\\#{$1}{1}{2}"
         else
           tex_command(m_id, args)
         end
