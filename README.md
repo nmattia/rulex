@@ -68,8 +68,8 @@ document do
   # At any time, you can prefix a method call with `pure_`. This will return the LaTeX text
   # (`String`) that would have been produced, instead of writing the command to the
   # document tree. For instance, we want to write the whole text "Good job, ... " to the
-  # document tree, while referencing the next section; we don't want to write it to the 
-  # tree on top of that!
+  # document tree, while referencing the next section; we don't want to write the reference
+  # to the tree on top of that!
   raw "Good job, now off to section #{pure_ref :acks}\n" 
 
   section "Acknowledgements"
