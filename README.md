@@ -4,7 +4,16 @@ Rulex is a rubygem allowing you to use Ruby while writing LaTex files. It reads 
 
 ## Installation
 
-Add this line to your application's Gemfile:
+To start using Rulex, you'll first need Ruby and Rubygems (here for a Debian-like, though I recommend rvm):
+
+    $ apt-get install ruby && apt-get install rubygems
+
+and then install the gem as 
+
+    $ gem install rulex
+
+
+To use it in your own project, add this line to your application's Gemfile:
 
 ```ruby
 gem 'rulex'
@@ -14,9 +23,6 @@ And then execute:
 
     $ bundle
 
-Or install it yourself as:
-
-    $ gem install rulex
 
 ## Usage
 
