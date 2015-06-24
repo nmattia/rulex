@@ -55,6 +55,8 @@ module Rulex
       def method_missing(m_id, *args, &block) 
         if block
           tex_environment(m_id, args, block)
+        elsif /pure_([a-zA-Z]+)/.match(m_id)
+          "\\#{$1}{1}{2}"
         else
           tex_command(m_id, args)
         end

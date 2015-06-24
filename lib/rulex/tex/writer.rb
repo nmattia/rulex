@@ -6,30 +6,33 @@ module Rulex
         @content = ''
       end
 
-      def import arr
-        return unless arr
-        arr.each do |item|
-
-          case item[:type]
-          when :command
-            @content += "\\#{item[:name]}"
-            if opts = item[:options]
-              @content += '[' + opts.join(',') + ']'
-            end
-            item[:arguments].each do |arg|
-              @content += "{#{arg}}"
-            end
-            @content += "\n"
-          when :text
-            @content += item[:text]
-          when :environment
-            @content += "\\begin{#{item[:name]}}\n"
-            import item[:children]
-            @content += "\\end{#{item[:name]}}\n"
-          else
-            import item[:children] if item[:children]
+      def self.to_str item
+        case item[:type]
+        when :command
+          str = "\\#{item[:name]}"
+          if opts = item[:options]
+            str += '[' + opts.join(',') + ']'
           end
+          item[:arguments].each do |arg|
+            str += "{#{arg}}"
+          end
+          str += "\n"
+        when :text
+          res = item[:text]
+        when :environment
+          str = "\\begin{#{item[:name]}}\n"
+          if children = item[:children]
+            str += item[:children].inject(""){|acc, c| acc += Rulex::Tex::Writer.to_str c} 
+          end
+          res = str += "\\end{#{item[:name]}}\n"
+        else
+          str = ""
+          res = str += item[:children].inject(""){|acc, c| acc += Rulex::Tex::Writer.to_str c} if item[:children]
         end
+      end
+
+      def import arr
+        arr.each {|i| @content += Rulex::Tex::Writer.to_str i} if arr
       end
 
       def to_s

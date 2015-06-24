@@ -219,5 +219,10 @@ describe Rulex::Rex::Reader do
     expect(node).to include(name: :documentclass)
     expect(node).to include(arguments: [:article])
   end
+
+  it 'translates missing methods starting with `pure_` to equivalent pure functions' do
+    reader = Rulex::Rex::Reader.new
+    expect(reader.pure_frac("1","2")).to eq("\\frac{1}{2}")
+  end
 end
 
