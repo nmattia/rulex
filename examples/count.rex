@@ -34,7 +34,7 @@ document do
   count_from (1..5)
   count_from (10..20)
 
-  raw "Good job, now off to section \\ref{acks}\n" # #{pure_ref :acks}\n"
+  raw "Good job, now off to section #{pure_ref :acks}\n" # #{pure_ref :acks}\n"
 
   section "Acknowledgements"
   label :acks

@@ -191,6 +191,18 @@ describe Rulex::Rex::Reader do
     expect(node).to include(arguments: ["my arg"])
   end
 
+
+  it 'writes latex commands with several args' do
+
+    reader = Rulex::Rex::Reader.new
+
+    reader.read %q[mycmd("arg1","arg2")]
+    node = reader.export.first
+    expect(node).to include(type: :command)
+    expect(node).to include(name: :mycmd)
+    expect(node).to include(arguments: ["arg1","arg2"])
+  end
+
   it 'write latex commands with args and opts' do
     reader = Rulex::Rex::Reader.new
 

@@ -33,11 +33,17 @@ module Rulex
       def build_tex_command(name, params)
         case params.length
         when 1
-          {type: :command, name: name, arguments: params} if params.length == 1
+          {type: :command, name: name, arguments: params} 
         when 2
-          opts = params[0]
-          args = params[1]
-          {type: :command, name: name, arguments: args, options: opts}
+          first = params[0]
+          second = params[1]
+          if Array === params[0] && Array === params[1]
+            {type: :command, name: name, arguments: second, options: first}
+          elsif String === params[0] && String === params[1]
+            {type: :command, name: name, arguments: [first, second]}
+          else
+            error "something is not quite right with the parameters"
+          end
         else
           error "wrong number of params"
         end
