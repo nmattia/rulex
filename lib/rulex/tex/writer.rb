@@ -26,8 +26,12 @@ module Rulex
           end
           res = str += "\\end{#{item[:name]}}\n"
         else
-          str = ""
-          res = str += item[:children].inject(""){|acc, c| acc += Rulex::Tex::Writer.to_str c} if item[:children]
+          if item[:children]
+            str = ""
+            res = str += item[:children].inject(""){|acc, c| acc += Rulex::Tex::Writer.to_str c} if item[:children] else 
+            ""
+            end
+
         end
       end
 
