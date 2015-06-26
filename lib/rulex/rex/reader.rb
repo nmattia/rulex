@@ -8,18 +8,33 @@ module Rulex
         @latex_reader = Rulex::Tex::Reader.new
       end
 
-      alias_method :read, :instance_eval
+      def read *args, &block
+        if args.length == 1
+          read_rex args.first
+        elsif block
+          instance_eval &block
+        end
+      end
 
-      def add_to_content node
+      def read_rex str
+        instance_eval rex_to_ruby str
+      end
+
+      # There are a few characters ('\\', '\[' and '\]') that %q[] escapes anyway
+      def rex_to_ruby str
+        str.gsub(/<##(((?!##>).)+)##>/) { |m| "raw %q[" + $1.gsub("\\","\\\\\\\\") + "]"}
+      end
+
+      def add_node_to_content node
         @content_stack.last << node
       end
 
       def raw str
-        add_to_content(type: :text, text: str)
+        add_node_to_content(type: :text, text: str)
       end
 
       def tex str
-        add_to_content(type: :tex, children: @latex_reader.read(str))
+        add_node_to_content(type: :tex, children: @latex_reader.read(str))
       end
 
       def import filepath
@@ -50,31 +65,31 @@ module Rulex
       end
 
       def tex_command(name, params)
-        add_to_content build_tex_command name, params
+        add_node_to_content build_tex_command name, params
       end
 
       def depth
         @content_stack.length - 1
       end
 
-      def tex_environment(name, args, block)
+      def tex_environment(name, *args, &block)
         new_node = {type: :environment, name: name, arguments: args}
         @content_stack.push []
         read &block
         new_node.merge!(children: @content_stack.pop)
-        add_to_content new_node
+        add_node_to_content new_node
       end
 
       def method_missing(m_id, *args, &block) 
         if block
-          tex_environment(m_id, args, block)
+          tex_environment(m_id, *args, &block)
         elsif /pure_([a-zA-Z]+)/.match(m_id)
           Rulex::Tex::Writer.to_str(build_tex_command($1,args))
-          #"\\#{$1}{1}{2}"
         else
           tex_command(m_id, args)
         end
       end
+
     end
   end
 end

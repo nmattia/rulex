@@ -203,7 +203,7 @@ describe Rulex::Rex::Reader do
     expect(node).to include(arguments: ["arg1","arg2"])
   end
 
-  it 'write latex commands with args and opts' do
+  it 'writes latex commands with args and opts' do
     reader = Rulex::Rex::Reader.new
 
     reader.read %q[mycmd(["option1","option2"], ["arg1","arg2"])]
@@ -235,6 +235,25 @@ describe Rulex::Rex::Reader do
   it 'translates missing methods starting with `pure_` to equivalent pure functions' do
     reader = Rulex::Rex::Reader.new
     expect(reader.pure_tilde("x").strip).to eq("\\tilde{x}")
+  end
+
+  it "transforms text blocs delimited by '<##' and '##>' into raw calls if called with read_rex" do
+    reader = Rulex::Rex::Reader.new
+
+    reader.read_rex "<##\\documentclass{}##>"
+
+    document = reader.export.first
+    expect(document).to include(type: :text, text: "\\documentclass{}")
+  end
+
+
+  it "transforms text blocs delimited by '<##' and '##>' into raw calls if called with read" do
+    reader = Rulex::Rex::Reader.new
+
+    reader.read "<##\\documentclass{}##>"
+
+    document = reader.export.first
+    expect(document).to include(type: :text, text: "\\documentclass{}")
   end
 end
 
