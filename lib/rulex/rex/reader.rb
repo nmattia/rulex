@@ -22,7 +22,7 @@ module Rulex
 
       # There are a few characters ('\\', '\[' and '\]') that %q[] escapes anyway
       def rex_to_ruby str
-        str.gsub(/<##(((?!##>).)+)##>/) { |m| "raw %q[" + $1.gsub("\\","\\\\\\\\") + "]"}
+        str.gsub(/<##(((?!##>)[\s\S])+)##>/) { |m| "raw %q[" + $1.gsub("\\","\\\\\\\\") + "]"}
       end
 
       def add_node_to_content node

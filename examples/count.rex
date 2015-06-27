@@ -52,4 +52,12 @@ document do
       item "Mr. #{name}"
     end
   end
+
+
+# At any time, you can use the delimiters `<##` and `##>` to inject LaTeX code. Note that the following characters won't be escaped: '\\', '\]', '\['.. The delimiters are part of the Rulex file syntax, and are translated into Ruby calls when the file is process; they aren't some kind of Ruby magic. 
+  <## \subsection{Some pure \latex}
+  
+  And some more here.
+  
+  ##>
 end
