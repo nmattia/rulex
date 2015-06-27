@@ -20,7 +20,7 @@ module Rulex
         instance_eval rex_to_ruby str
       end
 
-      # There are a few characters ('\\', '\[' and '\]') that %q[] escapes anyway
+      # There are a few characters ('\\', '\[' and '\]') that even %q[] escapes
       def rex_to_ruby str
         str.gsub(/<##(((?!##>)[\s\S])+)##>/) { |m| "raw %q[" + $1.gsub("\\","\\\\\\\\") + "]"}
       end
