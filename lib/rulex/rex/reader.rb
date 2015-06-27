@@ -46,8 +46,16 @@ module Rulex
       end
 
       def build_tex_command(name, params)
+
+        fail ArgumentError, "Command name must be a String or a Symbol, got #{name} of type #{name.class}" unless
+            String === name or Symbol === name
+
         case params.length
+        when 0
+          {type: :command, name: name}
         when 1
+          fail ArgumentError "Command arguments must all be String s or Symbol s, got #{params}" unless
+            params.all?{|s| String === s or Symbol === s}
           {type: :command, name: name, arguments: params} 
         when 2
           first = params[0]
@@ -57,19 +65,20 @@ module Rulex
           elsif String === params[0] && String === params[1]
             {type: :command, name: name, arguments: [first, second]}
           else
-            error "something is not quite right with the parameters"
+            raise ArgumentError, "something is not quite right with the parameters"
           end
         else
-          error "wrong number of params"
+          raise ArgumentError, "wrong number of params"
         end
       end
 
-      def tex_command(name, params)
-        add_node_to_content build_tex_command name, params
-      end
 
       def depth
         @content_stack.length - 1
+      end
+
+      def tex_command(name, *params)
+        add_node_to_content build_tex_command name, *params
       end
 
       def tex_environment(name, *args, &block)

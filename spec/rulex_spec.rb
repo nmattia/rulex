@@ -125,6 +125,18 @@ describe Rulex::Tex::Reader do
 end
 
 describe Rulex::Tex::Writer do
+
+  describe "self.to_str" do
+    it 'only accepts a Hash as an argument' do
+      expect{Rulex::Tex::Writer.to_str [:type, :name]}.to raise_error TypeError
+    end
+
+    it 'only accepts a Hash if :type is defined' do
+      expect{Rulex::Tex::Writer.to_str(something: :else)}.to raise_error ArgumentError
+    end
+
+  end
+
   it 'writes an empty document' do
     writer = Rulex::Tex::Writer.new
     writer.import []
@@ -145,10 +157,30 @@ describe Rulex::Tex::Writer do
     expect(writer.export.strip).to eq("\\documentclass{article}")
   end
 
+  it 'writes commands with no arguments' do
+    writer = Rulex::Tex::Writer.new
+    writer.import [{type: :command, name: :titlepage}]
+    expect(writer.export.strip).to eq("\\titlepage")
+  end
+
   it 'writes commands with arguments and optional arguments' do
     writer = Rulex::Tex::Writer.new
     writer.import [{type: :command, name: :documentclass, options: ["11pt",:a4paper] , arguments: [:article]}]
     expect(writer.export.strip).to eq("\\documentclass[11pt,a4paper]{article}")
+  end
+
+  it 'writes environment' do
+    writer = Rulex::Tex::Writer.new
+    writer.import([{type: :environment, name: :frame, children: [{type: :command, name: :cmd}]}])
+    expect(writer.export.strip).to eq("\\begin{frame}\n\\cmd\n\\end{frame}")
+  end
+
+  it 'writes environment with arguments' do
+    writer = Rulex::Tex::Writer.new
+    writer.import([{type: :environment, name: :frame, 
+                    arguments: ["arg1", "arg2"],
+                    children: [{type: :command, name: :cmd}]}])
+    expect(writer.export.strip).to eq("\\begin{frame}{arg1}{arg2}\n\\cmd\n\\end{frame}")
   end
 end
 
@@ -191,9 +223,37 @@ describe Rulex::Rex::Reader do
     expect(node).to include(arguments: ["my arg"])
   end
 
+  it 'reads method with blocks as environments' do
 
-  it 'writes latex commands with several args' do
+    reader = Rulex::Rex::Reader.new
 
+    reader.read %q[
+    myenv do
+      mycom
+    end
+    ]
+    node = reader.export.first
+    expect(node).to include(type: :environment)
+    expect(node).to include(name: :myenv)
+    expect(node[:children].first).to include(type: :command)
+    expect(node[:children].first).to include(name: :mycom)
+  end
+
+  it 'reads method with params and block as environments with args' do
+
+    reader = Rulex::Rex::Reader.new
+
+    reader.read %q[
+    myenv("arg1", "arg2") do
+      mycom
+    end
+    ]
+    node = reader.export.first
+    expect(node).to include(type: :environment)
+    expect(node).to include(name: :myenv)
+    expect(node).to include(arguments: ["arg1", "arg2"])
+  end
+  it 'reads latex commands with several args' do
     reader = Rulex::Rex::Reader.new
 
     reader.read %q[mycmd("arg1","arg2")]
@@ -203,7 +263,7 @@ describe Rulex::Rex::Reader do
     expect(node).to include(arguments: ["arg1","arg2"])
   end
 
-  it 'writes latex commands with args and opts' do
+  it 'reads latex commands with args and opts' do
     reader = Rulex::Rex::Reader.new
 
     reader.read %q[mycmd(["option1","option2"], ["arg1","arg2"])]
