@@ -1,5 +1,14 @@
 require 'spec_helper'
 
+def pandoc?
+  begin
+    `pandoc -v`
+  rescue Errno::ENOENT
+    return false
+  end
+  return true
+end
+
 describe Rulex do
   it 'has a version number' do
     expect(Rulex::VERSION).not_to be nil
@@ -19,19 +28,21 @@ describe Rulex do
     expect(latex_content.strip).to eq(%q[\documentclass{article}])
   end
 
-  it 'processes the examples correctly' do
-    rex_files = Dir.glob('examples/*.rex')
-    rex_files.each do |dot_rex|
+  if pandoc?
+    it 'processes the examples correctly' do
+      rex_files = Dir.glob('examples/*.rex')
+      rex_files.each do |dot_rex|
 
-      dot_tex = dot_rex.sub /\.[^.]+\z/, ".tex"
+        dot_tex = dot_rex.sub /\.[^.]+\z/, ".tex"
 
-      rex_reader = Rulex::Rex::Reader.new
-      tex_writer = Rulex::Tex::Writer.new
-      rex_reader.import dot_rex
-      tex_writer.import rex_reader.export
-      expect(tex_writer.export.strip).to eq(File.open(dot_tex).read.strip)
+        rex_reader = Rulex::Rex::Reader.new
+        tex_writer = Rulex::Tex::Writer.new
+        rex_reader.import dot_rex
+        tex_writer.import rex_reader.export
+        expect(tex_writer.export.strip).to eq(File.open(dot_tex).read.strip)
+      end
+
     end
-
   end
 end
 
@@ -274,22 +285,24 @@ describe Rulex::Rex::Reader do
     expect(node).to include(options: ["option1", "option2"])
   end
 
-  it 'reads markdown' do
-    reader = Rulex::Rex::Reader.new
+  if pandoc?
+    it 'reads markdown' do
+      reader = Rulex::Rex::Reader.new
 
-    reader.read %q[md "this is *not* funny"]
-    nodes = reader.export
-    first_text = nodes.first
-    command = nodes[1]
-    last_text = nodes.last
+      reader.read %q[md "this is *not* funny"]
+      nodes = reader.export
+      first_text = nodes.first
+      command = nodes[1]
+      last_text = nodes.last
 
-    expect(first_text).to include(type: :text)
-    expect(first_text).to include(text: "this is ")
-    expect(command).to include(type: :command)
-    expect(command).to include(name: "emph")
-    expect(command).to include(arguments: ["not"])
-    expect(last_text).to include(type: :text)
-    expect(last_text).to include(text: " funny\n")
+      expect(first_text).to include(type: :text)
+      expect(first_text).to include(text: "this is ")
+      expect(command).to include(type: :command)
+      expect(command).to include(name: "emph")
+      expect(command).to include(arguments: ["not"])
+      expect(last_text).to include(type: :text)
+      expect(last_text).to include(text: " funny\n")
+    end
   end
 
   it 'translates missing_method calls with blocks to environments' do
