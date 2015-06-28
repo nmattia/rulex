@@ -70,7 +70,7 @@ end
 document do
   section "A Short Lecture on How to Count"
 
-  # You can use markdown
+  # You can use markdown (though you need `pandoc` to be installed)
   md "Pay attention, the following is *very* important."
 
 # You can of course call the functions you defined (AND NOT BE LIMITED TO 9 ******* ARGUMENTS)
@@ -179,9 +179,7 @@ That's the point. Seriously, the code might need some refactoring, and can alway
 
 * `Rulex::Tex::Grammar::Document` is a big misnommer! It should be changed to something that reflects better what its role is.
 * `Rulex::Rex::Reader#raw` might not be the best name either. Maybe change it to text.
-* Add markdown support to `Rulex::Rex::Reader` through Pandoc
 * The parser needs some beefin-up (not sure what it does with spaces, especially with command options)
-* Maybe add some syntax for LaTeX commands to output text directly rather than store the command in the tree
 * Coffee is on me if you write a Vim plugin
 * Another coffee if you also write a Rake task.
 * There should be some special delimiters like Ruby's `#{...}` (maybe `#< ... >`) which would translate all method calls to `pure_` method calls. That would make inlining method calls in strings much easier.
