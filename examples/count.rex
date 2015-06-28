@@ -28,6 +28,8 @@ end
 document do
   section "A Short Lecture on How to Count"
 
+  # You can use markdown
+  md "Pay attention, the following is *very* important."
 
 # You can of course call the functions you defined (AND NOT BE LIMITED TO 9 ******* ARGUMENTS)
 
@@ -55,7 +57,7 @@ document do
 
 
 # At any time, you can use the delimiters `<##` and `##>` to inject LaTeX code. Note that the following characters won't be escaped: '\\', '\]', '\['.. The delimiters are part of the Rulex file syntax, and are translated into Ruby calls when the file is process; they aren't some kind of Ruby magic. 
-  <## \subsection{Some pure \latex}
+  <## \subsection{Some pure \LaTeX}
   
   And some more here.
   

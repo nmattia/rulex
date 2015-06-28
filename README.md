@@ -70,6 +70,8 @@ end
 document do
   section "A Short Lecture on How to Count"
 
+  # You can use markdown
+  md "Pay attention, the following is *very* important."
 
 # You can of course call the functions you defined (AND NOT BE LIMITED TO 9 ******* ARGUMENTS)
 
@@ -79,8 +81,8 @@ document do
   # At any time, you can prefix a method call with `pure_`. This will return the LaTeX text
   # (`String`) that would have been produced, instead of writing the command to the
   # document tree. For instance, we want to write the whole text "Good job, ... " to the
-  # document tree, while referencing the next section; we don't want to write the reference
-  # to the tree on top of that!
+  # document tree, while referencing the next section; we don't want to write it to the 
+  # tree on top of that!
   raw "Good job, now off to section #{pure_ref :acks}\n" 
 
   section "Acknowledgements"
@@ -97,7 +99,7 @@ document do
 
 
 # At any time, you can use the delimiters `<##` and `##>` to inject LaTeX code. Note that the following characters won't be escaped: '\\', '\]', '\['.. The delimiters are part of the Rulex file syntax, and are translated into Ruby calls when the file is process; they aren't some kind of Ruby magic. 
-  <## \subsection{Some pure \latex}
+  <## \subsection{Some pure \LaTeX}
   
   And some more here.
   
@@ -111,6 +113,8 @@ Run `rulex example.rex > example.tex` to get
 \documentclass{article}
 \begin{document}
 \section{A Short Lecture on How to Count}
+Pay attention, the following is \emph{very}
+ important.
 \subsection{how to count from 1 to 5}
 Let's try to count.\begin{itemize}
 \item{1}
@@ -142,7 +146,11 @@ Finally I would like to thank
 \item{Mr. Donald Knuth}
 \item{Mr. Yukihiro Matsumoto}
 \end{enumerate}
-\end{document}
+ \subsection{Some pure \LaTeX}
+  
+  And some more here.
+  
+  \end{document}
 ```
 
 ## Development
