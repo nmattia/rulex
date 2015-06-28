@@ -1,3 +1,5 @@
+require 'pandoc-ruby'
+
 module Rulex
   module Rex
     class Reader
@@ -44,7 +46,11 @@ module Rulex
       end
 
       def md str
-        raise RuntimeError, "not implemented"
+        latex_str = PandocRuby.new(str).to_latex
+        puts latex_str
+        arr = @latex_reader.read(latex_str).to_a
+        puts "Length is " + arr.length.to_s
+        append_nodes_to_content arr
       end
 
       def tex str
