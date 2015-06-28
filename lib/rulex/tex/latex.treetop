@@ -1,6 +1,6 @@
 grammar Latex
-    rule document
-        (environment/command/text)* <Rulex::Tex::Grammar::Document>
+    rule latex_content
+        (environment/command/text)* <Rulex::Tex::Grammar::LatexContent>
     end
 
     rule environment
@@ -8,12 +8,7 @@ grammar Latex
     end
 
     rule environment_text
-        #document &{ |s| puts s[0].text_value; true}
-        #( document) !"\\end{" &{ |s| puts s[0].text_value; true}
-        document
-
-        #[^\\]* &{ |s| puts s[0].text_value; true}
-        #[^\\]*
+        latex_content
     end
 
 

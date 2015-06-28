@@ -3,7 +3,7 @@
 ![Travis-CI badge](https://api.travis-ci.org/Nicowcow/rulex.svg)
 [![Code Climate](https://codeclimate.com/github/Nicowcow/rulex/badges/gpa.svg)](https://codeclimate.com/github/Nicowcow/rulex)
 [![Test Coverage](https://codeclimate.com/github/Nicowcow/rulex/badges/coverage.svg)](https://codeclimate.com/github/Nicowcow/rulex/coverage)
-
+[![Inline docs](http://inch-ci.org/github/Nicowcow/rulex.svg?branch=master)](http://inch-ci.org/github/Nicowcow/rulex)
 Rulex is a rubygem allowing you to use Ruby while writing LaTex files. It reads rulex `.rex` files, and converts them into LaTex `.tex` files. A `.rex` file is a Ruby file; you can use (almost) everything the way you would in a Ruby script. 
 
 ## Installation

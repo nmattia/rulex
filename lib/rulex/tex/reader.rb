@@ -15,14 +15,21 @@ module Rulex
         @content = []
       end
 
-
+      # Exports the Reader's content
+      # @return [Array] the Reader's content
       def to_a
         @content
       end
       alias_method :export, :to_a
 
+      # Takes a string of LaTeX contents, parses it to a Rulex tree, and sets that tree as
+      # the Reader's content
+      # @param str [String] the LaTeX contents as a String
+      # @return [Array] The new content
       def read str
-        @content = @parser.parse(str).node_content
+        new_content = @parser.parse(str).to_a
+        raise TypeError, "content should be an Array" unless new_content and Array === new_content
+        @content = new_content
       end
     end
   end

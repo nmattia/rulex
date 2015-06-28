@@ -8,12 +8,18 @@ module Rulex
         @latex_reader = Rulex::Tex::Reader.new
       end
 
+      # Feeds instructions, either as a [String] or Rulex instructions (parsed and then interpreted
+      # with instance_eval) or as a block (it must be either or). All the functions of 
+      # Rulex::Rex::Reader are available.
+      # @param either a [String] or a [Block]
+      # @return self (the Rulex::Rex::Reader)
       def read *args, &block
         if args.length == 1
           read_rex args.first
         elsif block
           instance_eval &block
         end
+        self
       end
 
       def read_rex str
@@ -29,12 +35,20 @@ module Rulex
         @content_stack.last << node
       end
 
+      def append_nodes_to_content arr
+        @content_stack.last.concat arr
+      end
+
       def raw str
         add_node_to_content(type: :text, text: str)
       end
 
+      def md str
+        raise RuntimeError, "not implemented"
+      end
+
       def tex str
-        add_node_to_content(type: :tex, children: @latex_reader.read(str))
+        append_nodes_to_content @latex_reader.read(str).to_a
       end
 
       def import filepath
