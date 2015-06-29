@@ -1,5 +1,7 @@
 # Rulex
 
+[![Join the chat at https://gitter.im/Nicowcow/rulex](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/Nicowcow/rulex?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 ![Travis-CI badge](https://api.travis-ci.org/Nicowcow/rulex.svg)
 [![Code Climate](https://codeclimate.com/github/Nicowcow/rulex/badges/gpa.svg)](https://codeclimate.com/github/Nicowcow/rulex)
 [![Test Coverage](https://codeclimate.com/github/Nicowcow/rulex/badges/coverage.svg)](https://codeclimate.com/github/Nicowcow/rulex/coverage)
