@@ -1,13 +1,22 @@
 require 'pandoc-ruby'
 
+grammar_path = File.join(File.dirname(File.expand_path(__FILE__)),
+                         'rulex.treetop')
+Treetop.load grammar_path
+
 module Rulex
   module Rex
+
     class Reader
 
       def initialize
         @content = []
         @content_stack = [@content]
         @latex_reader = Rulex::Tex::Reader.new
+        @delimiters = {
+          raw: { open: "<##", close: "##>"},
+          tex: { open: "<(#", close: "#)>"}
+        }
       end
 
       # Feeds instructions, either as a [String] or Rulex instructions (parsed and then interpreted
@@ -28,9 +37,20 @@ module Rulex
         instance_eval rex_to_ruby str
       end
 
-      # There are a few characters ('\\', '\[' and '\]') that even %q[] escapes
       def rex_to_ruby str
-        str.gsub(/<##(((?!##>)[\s\S])+)##>/) { |m| "raw %q[" + $1.gsub("\\","\\\\\\\\") + "]"}
+        @delimiters.inject(str) do |str, d|
+          key = d.first
+          val = d[1]
+
+          open_delimiter = Regexp.escape val[:open]
+          close_delimiter = Regexp.escape val[:close]
+
+          regexp = /#{open_delimiter}(((?!#{close_delimiter})[\s\S])+)#{close_delimiter}/
+
+          # There are a few characters ('\\', '\[' and '\]') that even %q[] "un"-escapes,
+          # hence the second gsub
+          str.gsub(regexp) { |m| "#{key} %q[" + $1.gsub("\\","\\\\\\\\") + "]"}
+        end
       end
 
       def add_node_to_content node
@@ -55,8 +75,19 @@ module Rulex
         append_nodes_to_content @latex_reader.read(str).to_a
       end
 
+
+      # Reads a file, given a filepath
+      # @filepath a [String]
+      # @return self (the Rulex::Rex::Reader)
       def import filepath
-        read File.open(filepath).read
+        content = File.read(filepath)
+        if content =~ /\A(---\s*\n.*?\n?)^((---|\.\.\.)\s*$\n?)/m
+          content = $POSTMATCH
+          data = YAML.load($1)
+        end
+
+        data ||= {}
+        read content
       end
 
       def export

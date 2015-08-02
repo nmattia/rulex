@@ -47,18 +47,6 @@ describe Rulex do
 end
 
 describe Rulex::Tex::Reader do
-  #it 'reads an empty document' do
-    #reader = Rulex::Tex::Reader.new
-    #reader.read ""
-    #expect(reader.export).to include(type: :node)
-  #end
-
-  #it 'accepts text' do
-    #reader = Rulex::Tex::Reader.new
-    #reader.read "abc"
-    #arr = reader.export
-    #expect(arr.first).to include(type: :node)
-  #end
 
   it 'reads a word' do
     word = "abc"
@@ -77,15 +65,6 @@ describe Rulex::Tex::Reader do
     expect(text_node).to include(type: :text)
     expect(text_node).to include(text: text)
   end
-
-
-  #it 'accepts commands' do
-    #reader = Rulex::Tex::Reader.new
-    #reader.read "\\somecommand{arg}"
-    #h = reader.export
-    #expect(h).to include(type: :node)
-  #end
-
 
   it 'reads commands' do
     reader = Rulex::Tex::Reader.new
@@ -153,7 +132,7 @@ describe Rulex::Tex::Writer do
     writer.import []
     expect(writer.export).to eq("")
 
-  end
+ end
 
   it 'writes text' do
     writer = Rulex::Tex::Writer.new
@@ -345,6 +324,15 @@ describe Rulex::Rex::Reader do
 
     document = reader.export.first
     expect(document).to include(type: :text, text: "\\documentclass{}")
+  end
+
+  it "transforms text blocs delimited by '<(#' and '#)>' into tex calls if called with read" do
+    reader = Rulex::Rex::Reader.new
+
+    reader.read "<(#\\documentclass{}#)>"
+
+    document = reader.export.first
+    expect(document).to include(type: :command, name: "documentclass")
   end
 end
 
