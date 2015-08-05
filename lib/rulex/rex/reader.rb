@@ -3,6 +3,9 @@ require 'pandoc-ruby'
 module Rulex
   module Rex
     class Reader < DocumentTreeBuilder
+
+      writer_class Rulex::Tex::Writer
+
       def initialize
         super
         @latex_reader = Rulex::Tex::Reader.new

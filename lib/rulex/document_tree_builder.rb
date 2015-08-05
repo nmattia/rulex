@@ -11,10 +11,8 @@ end
 
 module Rulex
   # DocumenTreeBuilder is the superclass for any Builder.
-  # When a class extends [DocumentTreeBuilder] it must do
-  # two things in initialize:
-  #  * call super
-  #  * set @writer_class with the writer class
+  # When a class extends [DocumentTreeBuilder] it must 
+  #  * call super in initialize (ideally before anything else)
   #
   # and it can
   #  * add delimiters to @delimiters
@@ -25,7 +23,7 @@ module Rulex
       @delimiters = {}
     end
 
-    def rex_to_ruby str
+    def rulex_to_ruby str
       @delimiters.inject(str) do |str, d|
         key = d.first
         val = d[1]
@@ -44,6 +42,11 @@ module Rulex
     # TODO
     def import str
       import_file str
+    end
+
+
+    def self.writer_class klass
+      @@writer_class = klass
     end
 
 
@@ -80,7 +83,7 @@ module Rulex
       @content_stack.length - 1
     end
     def read_rex str
-      instance_eval rex_to_ruby str
+      instance_eval rulex_to_ruby str
     end
 
 
@@ -109,7 +112,9 @@ module Rulex
       if block
         environment(m_id, *args, &block)
       elsif /\Apure_/ =~ m_id
-        @writer_class.to_str(build_command($',args))
+        raise RuntimeError, 
+          "you must set @@writer_class before calling a 'pure_' method, e.g by calling `writer_class MyWriterClass` at the top of your class" unless @@writer_class
+        @@writer_class.to_str(build_command($',args))
       else
         command(m_id, args)
       end
