@@ -184,6 +184,11 @@ describe Rulex::Rex::Reader do
   end
 
 
+  it 'allows for empty files' do
+    expect{Rulex::Rex::Reader.new.import_content ""}.not_to raise_error
+  end
+
+
   it 'allows method definitions' do
     reader = Rulex::Rex::Reader.new
     reader.read "def my_func\n  'result'\nend"
@@ -295,7 +300,7 @@ describe Rulex::Rex::Reader do
 
   it 'imports a file' do
     reader = Rulex::Rex::Reader.new
-    reader.import 'examples/hello_world.rex'
+    reader.import_file 'examples/hello_world.rex'
     node = reader.export.first
     expect(node).to include(type: :command)
     expect(node).to include(name: :documentclass)
@@ -330,6 +335,23 @@ describe Rulex::Rex::Reader do
     reader = Rulex::Rex::Reader.new
 
     reader.read "<(#\\documentclass{}#)>"
+
+    document = reader.export.first
+    expect(document).to include(type: :command, name: "documentclass")
+  end
+
+  it "allows delimiters to be modified through frontmatter" do
+    reader = Rulex::Rex::Reader.new
+
+    reader.import_content <<-EOF
+---
+delimiters:
+  tex: 
+    open: AA
+    close: BB
+---
+AA\\documentclass{}BB
+EOF
 
     document = reader.export.first
     expect(document).to include(type: :command, name: "documentclass")

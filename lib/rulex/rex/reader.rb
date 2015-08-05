@@ -1,14 +1,26 @@
 require 'pandoc-ruby'
+require 'yaml'
 
-grammar_path = File.join(File.dirname(File.expand_path(__FILE__)),
-                         'rulex.treetop')
-Treetop.load grammar_path
+#grammar_path = File.join(File.dirname(File.expand_path(__FILE__)),
+#'rulex.treetop')
+#Treetop.load grammar_path
+
+
+
+
+# Used when reading YAML
+class Object
+  def deep_symbolize_keys
+    return self.inject({}){|memo,(k,v)| memo[k.to_sym] = v.deep_symbolize_keys; memo} if self.is_a? Hash
+    return self.inject([]){|memo,v    | memo           << v.deep_symbolize_keys; memo} if self.is_a? Array
+    return self
+  end
+end
+
 
 module Rulex
   module Rex
-
     class Reader
-
       def initialize
         @content = []
         @content_stack = [@content]
@@ -76,17 +88,35 @@ module Rulex
       end
 
 
+      # TODO
+      def import str
+        import_file str
+      end
+
+
       # Reads a file, given a filepath
       # @filepath a [String]
       # @return self (the Rulex::Rex::Reader)
-      def import filepath
+      def import_file filepath
         content = File.read(filepath)
+        import_content content
+      end
+
+
+      # Reads some content
+      # @content a [String]
+      # @return self (the Rulex::Rex::Reader)
+      def import_content content
         if content =~ /\A(---\s*\n.*?\n?)^((---|\.\.\.)\s*$\n?)/m
-          content = $POSTMATCH
-          data = YAML.load($1)
+          content = $'
+          data = YAML.load($1).deep_symbolize_keys
+        end
+        content ||= ""
+        data ||= {}
+        if(delimiters = data[:delimiters])
+          @delimiters.merge! delimiters
         end
 
-        data ||= {}
         read content
       end
 
@@ -97,14 +127,14 @@ module Rulex
       def build_tex_command(name, params)
 
         fail ArgumentError, "Command name must be a String or a Symbol, got #{name} of type #{name.class}" unless
-            String === name or Symbol === name
+        String === name or Symbol === name
 
         case params.length
         when 0
           {type: :command, name: name}
         when 1
           fail ArgumentError "Command arguments must all be String s or Symbol s, got #{params}" unless
-            params.all?{|s| String === s or Symbol === s}
+          params.all?{|s| String === s or Symbol === s}
           {type: :command, name: name, arguments: params} 
         when 2
           first = params[0]
