@@ -29,6 +29,8 @@ describe Rulex do
   end
 
   if pandoc?
+
+    puts "pandoc installed, testing examples"
     it 'processes the examples correctly' do
       rex_files = Dir.glob('examples/*.rex')
       rex_files.each do |dot_rex|
@@ -183,19 +185,6 @@ describe Rulex::Rex::Reader do
     expect(text_node).to include(text: "\\mycommand{}")
   end
 
-
-  it 'allows for empty files' do
-    expect{Rulex::Rex::Reader.new.import_content ""}.not_to raise_error
-  end
-
-
-  it 'allows method definitions' do
-    reader = Rulex::Rex::Reader.new
-    reader.read "def my_func\n  'result'\nend"
-    expect(reader.my_func).to eq('result')
-    expect(reader.instance_eval 'my_func').to eq('result')
-  end
-
   it 'reads LaTeX more than once' do
     reader = Rulex::Rex::Reader.new
     reader.read  "tex '\\mycommand{a}'\ntex '\\frac{1}{2}'"
@@ -219,7 +208,6 @@ describe Rulex::Rex::Reader do
   end
 
   it 'reads method with blocks as environments' do
-
     reader = Rulex::Rex::Reader.new
 
     reader.read %q[

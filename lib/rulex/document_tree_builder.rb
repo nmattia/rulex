@@ -9,6 +9,7 @@ class Object
 end
 
 
+
 module Rulex
   # DocumenTreeBuilder is the superclass for any Builder.
   # When a class extends [DocumentTreeBuilder] it must 
@@ -21,6 +22,7 @@ module Rulex
       @content = []
       @content_stack = [@content]
       @delimiters = {}
+      @pure_prefix = :pure_
     end
 
     def rulex_to_ruby str
@@ -111,7 +113,7 @@ module Rulex
     def method_missing(m_id, *args, &block)
       if block
         environment(m_id, *args, &block)
-      elsif /\Apure_/ =~ m_id
+      elsif /\A#{@pure_prefix}/ =~ m_id
         raise RuntimeError, 
           "you must set @@writer_class before calling a 'pure_' method, e.g by calling `writer_class MyWriterClass` at the top of your class" unless @@writer_class
         @@writer_class.to_str(build_command($',args))
