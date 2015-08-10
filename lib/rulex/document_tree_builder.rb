@@ -84,6 +84,7 @@ module Rulex
     def depth
       @content_stack.length - 1
     end
+
     def read_rex str
       instance_eval rulex_to_ruby str
     end
@@ -103,7 +104,7 @@ module Rulex
     # @return self (the Rulex::Rex::Reader)
     def read *args, &block
       if args.length == 1
-        read_rex args.first
+        instance_eval rulex_to_ruby args.first
       elsif block
         instance_eval &block
       end
