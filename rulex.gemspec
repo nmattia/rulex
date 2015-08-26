@@ -19,6 +19,7 @@ Gem::Specification.new do |spec|
 
   spec.add_runtime_dependency "treetop"
   spec.add_runtime_dependency "pandoc-ruby"
+  spec.add_runtime_dependency "piece_pipe"
 
   spec.add_development_dependency "bundler"
   spec.add_development_dependency "rake"

@@ -6,10 +6,6 @@ describe Rulex::Interpreter do
     Rulex::Interpreter.new
   end
 
-  def new_interpreter_with_stack
-    Rulex::Interpreter.new.push_new_stack_level
-  end
-
   def new_interpreter_with_content content
     new_interpreter.import_content content
   end
@@ -18,21 +14,65 @@ describe Rulex::Interpreter do
     expect{Rulex::Interpreter.new }.not_to raise_error
   end
 
-  describe '#add_node_to_content' do
-    it 'adds a node to the document tree' do
-      interpreter = new_interpreter
-      interpreter.add_node_to_content(type: :text, text: "Hello, World!")
-      expect(interpreter.content).to eq([{type: :text, text: "Hello, World!"}])
-    end
-  end
+  describe '#import' do
 
-  describe '#pop_and_merge_stack_level' do
-    it 'merges current stack content' do
+    module DummyGenerator 
+      def generate_sequence
+        produce(type: :dummy)
+      end
+    end
+
+    module Echo
+      def self.extended(mod)
+        mod.add_behavior(/.*/, lambda{ |s| {type: s}})
+      end
+    end
+
+    class GreetingBuilder < PiecePipe::Step
+      attr_reader :greetings
+      include DummyGenerator
+
+      def say_hi whom
+        @greetings = "#{whom} said hi"
+      end
+    end
+
+    it 'feeds pipeline' do
+      step = PiecePipe::Step.new
+      step.extend DummyGenerator
       interpreter = new_interpreter
-      interpreter.push_new_stack_level
-      interpreter.add_node_to_content(type: :smth)
-      interpreter.pop_and_merge_stack_level
-      expect(interpreter.content).to eq([{type: :smth}])
+      res = interpreter.import("", pipeline: [step])
+      expect(res).to eq({type: :dummy})
+    end
+
+    it 'forwards builder commands to first step of pipeline' do
+      step = PiecePipe::Step.new
+      step.extend Rulex::NodeBuilder
+      step.extend Echo
+      interpreter = new_interpreter
+      res = interpreter.import("hi\nthere", pipeline: [step])
+      expect(res).to eq([{type: :hi}, {type: :there}])
+    end
+
+    it 'gives access to builder' do
+      step = GreetingBuilder.new
+      interpreter = new_interpreter
+      interpreter.import("builder.say_hi 'Santa'", pipeline: [step])
+      expect(step.greetings).to eq("Santa said hi")
+    end
+
+    it 'builds environment' do
+      step = PiecePipe::Step.new
+      step.extend Rulex::NodeBuilder
+      step.extend Echo
+      interpreter = new_interpreter
+      res = interpreter.import("hi\nthere\nsomething do\n  different\nend", pipeline: [step])
+      expect(res).to eq([{type: :hi}, 
+                         {type: :there}, 
+                         {type: :something, children: [
+                            {type: :different}
+                         ]}])
+
     end
   end
 end

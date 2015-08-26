@@ -1,4 +1,5 @@
 require 'yaml'
+require 'piece_pipe'
 class Object
   # Used when reading YAML
   def deep_symbolize_keys
@@ -8,48 +9,38 @@ class Object
   end
 end
 
-
-
 module Rulex
   class Interpreter
 
-    def initialize
-      @content_stack = [@content]
-      @builder = NodeBuilder.new
-      @writer = NodeWriter.new
-      @stack = [{content: []}]
+    # accesses the builder (as the first pipeline step)
+    def builder
+      @pipeline_steps.first
     end
 
-    def content
-      @stack.last[:content]
+    # processes a string of contents 
+    # returns the end stage
+    def import(str, options={})
+      @pipeline_steps = options[:pipeline] || []
+      return import_contents_to_current_level(str)
     end
 
-    def add_node_to_content node
-      @stack.last[:content] << node
+    def import_contents_to_current_level(str)
+      unless @pipeline_steps.empty?
+        instance_eval str
+        pipeline = PiecePipe::Pipeline.new
+        @pipeline_steps.each {|step| pipeline.step step}
+        return pipeline.result
+      end
     end
 
-
-    def push_new_stack_level
-      @stack.push(content: [])
-      self
-    end
-
-    def pop_and_merge_stack_level
-      current_level = @stack.pop
-      latest_content = current_level[:content]
-      puts @stack
-      @stack.last[:content].concat latest_content
-      self
-    end
-
-    def import str
-      push_new_stack_level
-      import_contents_in_current_level str
-      pop_and_merge_stack_level
-    end
-
-    def import_contents_in_current_level str
-
+    def method_missing m_id, *args, &block
+      if block 
+        builder.begin_environment m_id
+        instance_eval &block
+        builder.end_environment m_id
+      else
+        builder.write_command(m_id, *args)
+      end
     end
   end
 end

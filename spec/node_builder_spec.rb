@@ -1,13 +1,17 @@
+require 'spec_helper.rb'
 describe Rulex::NodeBuilder do
-  def new_builder
-    Rulex::NodeBuilder.new
+
+  class Builder 
+    include Rulex::NodeBuilder
   end
 
+  def new_builder
+    Builder.new
+  end
 
   describe '#build_command' do
     it 'raises RuntimeError if no suiting behavior is found' do
-      expect{new_builder.build_command "flip"}.to raise_error RuntimeError
-
+      expect{new_builder.write_command "flip"}.to raise_error RuntimeError
     end
   end
 
