@@ -29,6 +29,7 @@ module Rulex
       h = split_front_matter_and_content str
       front_matter, content = h[:front_matter], h[:content]
       data = front_matter[:data]
+      load_pipeline front_matter[:pipeline]
       instance_eval content
       unless pipeline_steps.empty?
         pipeline = PiecePipe::Pipeline.new
@@ -56,6 +57,19 @@ module Rulex
     def pipeline_steps 
       @pipeline_steps = [] unless @pipeline_steps
       @pipeline_steps
+    end
+
+    def load_pipeline pipeline_data
+      return unless pipeline_data
+      pipeline_data.each do |step_data|
+        step = PiecePipe::Step.new
+        step_data.each { |mod_name| step.
+                         extend mod_name.split("::").
+                         reduce(Module){|acc,n| acc.
+                                        const_get(n)} }
+        push_pipeline_step step
+      end
+
     end
 
     def split_front_matter_and_content str

@@ -6,4 +6,5 @@ require "rulex/interpreter"
 require "rulex/tex/reader"
 require "rulex/tex/writer"
 require "rulex/rex/reader"
+require "rulex/echo"
 

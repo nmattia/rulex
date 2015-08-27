@@ -24,7 +24,7 @@ module SimpleEcho
 end
 
 builder_step = PiecePipe::Step.new
-builder_step.extend(Rulex::NodeBuilder )
+builder_step.extend(Rulex::NodeBuilder)
 builder_step.extend(SimpleBuilder)
 pipeline_steps.push(builder_step)
 
