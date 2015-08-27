@@ -12,35 +12,49 @@ end
 module Rulex
   class Interpreter
 
+    def push_pipeline_step step
+      pipeline_steps.push step
+    end
+
     # accesses the builder (as the first pipeline step)
     def builder
-      @pipeline_steps.first
+      pipeline_steps.first
     end
 
     # processes a string of contents 
     # returns the end stage
     def import(str)
-      @pipeline_steps = []
       return import_contents_to_current_level(str)
     end
 
     def import_contents_to_current_level(str)
       instance_eval str
-      unless @pipeline_steps.empty?
+      unless pipeline_steps.empty?
         pipeline = PiecePipe::Pipeline.new
-        @pipeline_steps.each {|step| pipeline.step step}
+        pipeline_steps.each {|step| pipeline.step step}
         return pipeline.result
       end
     end
 
     def method_missing m_id, *args, &block
-      if block 
+      command_with_block = args && Hash === opts = args.last && opts[:rulex][:forward_block]
+      raise RuntimeError, "No block provided" if command_with_block && !block
+
+      if command_with_block
+        builder.write_command(m_id, *args, &block)
+      elsif block
         builder.begin_environment m_id
         instance_eval &block
         builder.end_environment m_id
       else
         builder.write_command(m_id, *args)
       end
+    end
+
+    private
+    def pipeline_steps 
+      @pipeline_steps = [] unless @pipeline_steps
+      @pipeline_steps
     end
   end
 end

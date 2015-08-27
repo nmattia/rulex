@@ -41,7 +41,8 @@ describe Rulex::Interpreter do
       step = PiecePipe::Step.new
       step.extend DummyGenerator
       interpreter = new_interpreter
-      res = interpreter.import("", pipeline: [step])
+      interpreter.push_pipeline_step step
+      res = interpreter.import("")
       expect(res).to eq({type: :dummy})
     end
 
@@ -50,14 +51,16 @@ describe Rulex::Interpreter do
       step.extend Rulex::NodeBuilder
       step.extend Echo
       interpreter = new_interpreter
-      res = interpreter.import("hi\nthere", pipeline: [step])
+      interpreter.push_pipeline_step step
+      res = interpreter.import("hi\nthere")
       expect(res).to eq([{type: :hi}, {type: :there}])
     end
 
     it 'gives access to builder' do
       step = GreetingBuilder.new
       interpreter = new_interpreter
-      interpreter.import("builder.say_hi 'Santa'", pipeline: [step])
+      interpreter.push_pipeline_step step
+      interpreter.import("builder.say_hi 'Santa'")
       expect(step.greetings).to eq("Santa said hi")
     end
 
@@ -66,7 +69,8 @@ describe Rulex::Interpreter do
       step.extend Rulex::NodeBuilder
       step.extend Echo
       interpreter = new_interpreter
-      res = interpreter.import("hi\nthere\nsomething do\n  different\nend", pipeline: [step])
+      interpreter.push_pipeline_step step
+      res = interpreter.import("hi\nthere\nsomething do\n  different\nend")
       expect(res).to eq([{type: :hi}, 
                          {type: :there}, 
                          {type: :something, children: [
