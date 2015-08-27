@@ -36,7 +36,7 @@ module Rulex
       previous_content = stack.last
       environment_node = previous_content.last
       raise RuntimeError, "closing on wrong environment" unless environment_node[:type] == id
-      environment_node[:children] = latest_content unless latest_content.empty?
+      environment_node[:children] = latest_content
     end
 
     def generate_sequence

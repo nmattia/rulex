@@ -19,14 +19,14 @@ module Rulex
 
     # processes a string of contents 
     # returns the end stage
-    def import(str, options={})
-      @pipeline_steps = options[:pipeline] || []
+    def import(str)
+      @pipeline_steps = []
       return import_contents_to_current_level(str)
     end
 
     def import_contents_to_current_level(str)
+      instance_eval str
       unless @pipeline_steps.empty?
-        instance_eval str
         pipeline = PiecePipe::Pipeline.new
         @pipeline_steps.each {|step| pipeline.step step}
         return pipeline.result

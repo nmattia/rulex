@@ -2,10 +2,11 @@
 
 require "rulex"
 
+#rex_reader = Rulex::Rex::Reader.new
+#tex_writer = Rulex::Tex::Writer.new
 
-rex_reader = Rulex::Rex::Reader.new
-tex_writer = Rulex::Tex::Writer.new
+#rex_reader.read File.open(ARGV[0]).read
+#tex_writer.import rex_reader.export
+#puts tex_writer.export
 
-rex_reader.read File.open(ARGV[0]).read
-tex_writer.import rex_reader.export
-puts tex_writer.export
+Rulex::Interpreter.new.import(File.open(ARGV[0]).read)
