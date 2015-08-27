@@ -12,6 +12,8 @@ end
 module Rulex
   class Interpreter
 
+    attr_reader :data
+
     def push_pipeline_step step
       pipeline_steps.push step
     end
@@ -26,6 +28,7 @@ module Rulex
     def import(str)
       h = split_front_matter_and_content str
       front_matter, content = h[:front_matter], h[:content]
+      data = front_matter[:data]
       instance_eval content
       unless pipeline_steps.empty?
         pipeline = PiecePipe::Pipeline.new
@@ -36,7 +39,7 @@ module Rulex
 
     def method_missing m_id, *args, &block
       command_with_block = args && Hash === opts = args.last && opts[:rulex][:forward_block]
-      raise RuntimeError, "No block provided" if command_with_block && !block
+      raise RuntimeError, "No block provided for #{m_id}" if command_with_block && !block
 
       if command_with_block
         builder.write_command(m_id, *args, &block)
