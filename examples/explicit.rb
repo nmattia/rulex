@@ -26,13 +26,12 @@ end
 builder_step = PiecePipe::Step.new
 builder_step.extend(Rulex::NodeBuilder )
 builder_step.extend(SimpleBuilder)
-
-@pipeline_steps.push(builder_step)
+pipeline_steps.push(builder_step)
 
 
 echo_step = PiecePipe::Step.new
 echo_step.extend(SimpleEcho)
-@pipeline_steps.push(echo_step)
+pipeline_steps.push(echo_step)
 
 
 html do

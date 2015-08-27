@@ -24,11 +24,9 @@ module Rulex
     # processes a string of contents 
     # returns the end stage
     def import(str)
-      return import_contents_to_current_level(str)
-    end
-
-    def import_contents_to_current_level(str)
-      instance_eval str
+      h = split_front_matter_and_content str
+      front_matter, content = h[:front_matter], h[:content]
+      instance_eval content
       unless pipeline_steps.empty?
         pipeline = PiecePipe::Pipeline.new
         pipeline_steps.each {|step| pipeline.step step}
@@ -55,6 +53,16 @@ module Rulex
     def pipeline_steps 
       @pipeline_steps = [] unless @pipeline_steps
       @pipeline_steps
+    end
+
+    def split_front_matter_and_content str
+      if str =~ /\A(---\s*\n.*?\n?)^((---|\.\.\.)\s*$\n?)/m
+        content = $'
+        data = YAML.load($1).deep_symbolize_keys
+      end
+      content ||= str
+      data ||= {}
+      {content: content, front_matter: data}
     end
   end
 end
