@@ -7,7 +7,7 @@ module Rulex
       behaviors.push(id: id, ret: ret)
     end
 
-    def build_command(id)
+    def build_command(id, *args, &block)
       behavior = nil
 
       behaviors.each do |b|
@@ -18,15 +18,15 @@ module Rulex
       raise RuntimeError, "No behavior found" unless behavior
 
       ret = behavior[:ret]
-      ret.respond_to?(:call) ? ret.call(id) : ret
+      ret.respond_to?(:call) ? ret.call(id, *args, &block) : ret
     end
 
-    def write_command(id)
-      ret = build_command(id)
+    def write_command(id, *args, &block)
+      ret = build_command(id, *args)
       stack.last.push ret
     end
 
-    def begin_environment(id)
+    def begin_environment(id, *args, &block)
       stack.last.push({type: id})
       stack.push([])
     end
@@ -36,7 +36,7 @@ module Rulex
       previous_content = stack.last
       environment_node = previous_content.last
       raise RuntimeError, "closing on wrong environment" unless environment_node[:type] == id
-      environment_node[:children] = latest_content
+      environment_node[:children] = latest_content if latest_content
     end
 
     def generate_sequence

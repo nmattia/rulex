@@ -39,13 +39,13 @@ module Rulex
     end
 
     def method_missing m_id, *args, &block
-      command_with_block = args && Hash === opts = args.last && opts[:rulex][:forward_block]
+      command_with_block = args && Hash === (opts = args.last) && rlx_opts = opts[:rulex] && rlx_opts[:forward_block]
       raise RuntimeError, "No block provided for #{m_id}" if command_with_block && !block
 
       if command_with_block
         builder.write_command(m_id, *args, &block)
       elsif block
-        builder.begin_environment m_id
+        builder.begin_environment(m_id, *args)
         instance_eval &block
         builder.end_environment m_id
       else

@@ -1,6 +1,6 @@
 module SimpleBuilder
   def self.extended(builder)
-    builder.add_behavior(/.*/, lambda{|s| {type: s}})
+    builder.add_behavior(/.*/, lambda {|s| {type: s}})
   end
 end
 
