@@ -14,11 +14,6 @@ describe Rulex do
     expect(Rulex::VERSION).not_to be nil
   end
 
-  it 'does something useful' do
-    reader = Rulex::Tex::Reader.new
-    expect(reader).not_to be nil
-  end
-
   it 'translates a documentclass command' do
     rex_reader = Rulex::Rex::Reader.new
     tex_writer = Rulex::Tex::Writer.new

@@ -78,5 +78,15 @@ describe Rulex::Interpreter do
                          ]}])
 
     end
+
+    it 'allows method definitions' do
+      int = new_interpreter
+      int.import "def my_func\n 'result'\n end"
+      expect(int.my_func).to eq('result')
+    end
+
+    it 'does not crash on empty input' do
+      expect{new_interpreter.import ""}.not_to raise_error
+    end
   end
 end
