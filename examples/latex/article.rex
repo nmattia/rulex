@@ -10,17 +10,17 @@ module SimpleEcho
   end
 
   private
-    def write_with_indent(arr, indent)
-      arr.each do |item|
-        if children = item[:children]
-          puts "#{indent}<#{item[:type]}>"
-          write_with_indent(children, indent + " " * 4)
-          puts "#{indent}</#{item[:type]}>"
-        else
-          puts "#{indent}<#{item[:type]}/>"
-        end
+  def write_with_indent(arr, indent)
+    arr.each do |item|
+      if children = item[:children]
+        puts "#{indent}\\begin{#{item[:type]}}"
+        write_with_indent(children, indent + " " * 4)
+        puts "#{indent}\\end{#{item[:type]}}"
+      else
+        puts "#{indent}\\#{item[:type]}"
       end
     end
+  end
 end
 
 builder_step = PiecePipe::Step.new
@@ -34,12 +34,7 @@ echo_step.extend(SimpleEcho)
 pipeline_steps.push(echo_step)
 
 
-html do
-  head do
-    title
-  end
-
-  body do
-
-  end
+documentclass
+document do
+  something
 end
