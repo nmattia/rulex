@@ -1,5 +1,6 @@
 require 'yaml'
 require 'piece_pipe'
+
 class Object
   # Used when reading YAML
   def deep_symbolize_keys
@@ -10,7 +11,7 @@ class Object
 end
 
 module Rulex
-  class Interpreter
+  class Interpreter < BasicObject
 
     attr_reader :data
 
@@ -51,6 +52,10 @@ module Rulex
       else
         builder.write_command(m_id, *args)
       end
+    end
+
+    def self.const_missing(name)
+      ::Object.const_get(name)
     end
 
     private
