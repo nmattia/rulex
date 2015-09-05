@@ -12,7 +12,7 @@ describe Rulex::SuperLambda do
     expect(sl.call(4)).to eq(8)
   end
 
-  it 'forwards call to block' do
+  it 'forwards call to proc' do
     sl = Rulex::SuperLambda.new proc {|s| 2*s}
     expect(sl.call(4)).to eq(8)
   end
@@ -33,4 +33,14 @@ describe Rulex::SuperLambda do
 
     expect(sl.call(4,8)).to eq("it's me")
   end
+
+
+  it 'chooses the firstly added callable' do
+    sl = Rulex::SuperLambda.new
+    sl << ->(){ "it's me"}
+    sl << ->(){ "it's not me"}
+
+    expect(sl.call).to eq("it's me")
+  end
+
 end

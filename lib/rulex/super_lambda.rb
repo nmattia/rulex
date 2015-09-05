@@ -7,7 +7,11 @@ class Rulex::SuperLambda
   end
 
   def call(*args, &block)
-    @callables.detect{|c| c.parameters.length == args.length}.call(*args, &block)
+    begin
+      @callables.detect{|c| c.parameters.length == args.length}.call(*args, &block)
+    rescue
+      raise RuntimeError, "no fitting callable for #{args.inspect}"
+    end
   end
 
   def << callable
