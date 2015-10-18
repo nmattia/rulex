@@ -1,3 +1,11 @@
+# SuperLambda is a callable object. The actual behavior depends
+# on the number of arguments passed.
+#
+# Example:
+#
+#   sl = Rulex::SuperLambda.new (->(x){"one"}, ->(x,y){"two"})
+#   sl.call("hello")          # -> "one"
+#   sl.call("hello", "world") # -> "two"
 class Rulex::SuperLambda
 
   def initialize(*args, &block)
@@ -10,10 +18,11 @@ class Rulex::SuperLambda
     begin
       @callables.detect{|c| c.parameters.length == args.length}.call(*args, &block)
     rescue
-      raise RuntimeError, "no fitting callable for #{args.inspect}"
+      raise "no fitting callable for #{args.inspect}"
     end
   end
 
+  # Appends a callable to the callable list.
   def << callable
     @callables << callable
   end

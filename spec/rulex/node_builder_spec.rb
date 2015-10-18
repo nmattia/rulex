@@ -43,8 +43,7 @@ describe Rulex::NodeBuilder do
     builder = new_builder
     sl = Rulex::SuperLambda.new(->(s){{type: :text, text: "1 arg"}}, ->(s,t) {{type: :text, text: "2 args"}})
     builder.add_behavior("flip", sl)
-    expect(builder.build_command "flip").to eq(type: :text, text: "flop")
-    expect(builder.build_command("flip","flop")).to eq(type: :text, text: "flop")
-
+    expect(builder.build_command "flip").to eq(type: :text, text: "1 arg")
+    expect(builder.build_command("flip","flop")).to eq(type: :text, text: "2 args")
   end
 end

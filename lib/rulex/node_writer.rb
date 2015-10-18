@@ -6,8 +6,6 @@ module Rulex
     end
 
     def add_type(type, ret)
-      raise ArgumentError unless Symbol === type # or String === id or Regexp === id
-      #raise ArgumentError unless Proc === ret or Hash === ret
       @rules.push(type: type, ret: ret)
     end
 
@@ -29,7 +27,6 @@ module Rulex
       else
         ret
       end
-
     end
   end
 end
