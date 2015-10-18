@@ -38,4 +38,13 @@ describe Rulex::NodeBuilder do
     builder.add_behavior(/.lip/, lambda { |s| {type: :text, text: s.gsub(/i/,'o')}})
     expect(builder.build_command "flip").to eq(type: :text, text: "flop")
   end
+
+  it 'allows adding [Regexp | String] -> SuperLambda' do
+    builder = new_builder
+    sl = Rulex::SuperLambda.new(->(s){{type: :text, text: "1 arg"}}, ->(s,t) {{type: :text, text: "2 args"}})
+    builder.add_behavior("flip", sl)
+    expect(builder.build_command "flip").to eq(type: :text, text: "flop")
+    expect(builder.build_command("flip","flop")).to eq(type: :text, text: "flop")
+
+  end
 end

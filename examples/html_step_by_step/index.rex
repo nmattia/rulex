@@ -33,7 +33,6 @@ echo_step = PiecePipe::Step.new
 echo_step.extend(SimpleEcho)
 pipeline_steps.push(echo_step)
 
-
 html do
   head do
     title

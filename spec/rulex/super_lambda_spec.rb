@@ -34,7 +34,6 @@ describe Rulex::SuperLambda do
     expect(sl.call(4,8)).to eq("it's me")
   end
 
-
   it 'chooses the firstly added callable' do
     sl = Rulex::SuperLambda.new
     sl << ->(){ "it's me"}
@@ -42,5 +41,4 @@ describe Rulex::SuperLambda do
 
     expect(sl.call).to eq("it's me")
   end
-
 end

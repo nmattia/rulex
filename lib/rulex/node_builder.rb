@@ -2,8 +2,8 @@ module Rulex
   module NodeBuilder
 
     def add_behavior(id, ret)
-      raise ArgumentError unless Symbol === id or String === id or Regexp === id
-      raise ArgumentError unless Proc === ret or Hash === ret
+      #raise ArgumentError unless Symbol === id or String === id or Regexp === id
+      #raise ArgumentError unless Proc === ret or Hash === ret
       behaviors.push(id: id, ret: ret)
     end
 
